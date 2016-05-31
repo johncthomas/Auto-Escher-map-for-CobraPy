@@ -28,10 +28,13 @@ each other and can end up with secondary metabolites further away.
 
 import cobra, cobra.test
 import generate_escher_map
-
-# Load a model. selected_model variable used by getr() and getm()
+import os
+from IPython.display import HTML
+# Load a model.
 #ecoli_model = selected_model = cobra.io.load_json_model(cobra.test.ecoli_json)
-ecoli_model = selected_model = cobra.io.read_sbml_model(cobra.test.ecoli_sbml)
+ecoli_model = cobra.io.read_sbml_model(cobra.test.ecoli_sbml)
+# Escher requires cobra files in JSON
+cobra.io.save_json_model(ecoli_model, "test.json")
 # Set the objective reaction and optimise
 objective = 'ALCD2x'
 ecoli_model.change_objective(objective)
@@ -93,14 +96,17 @@ escher_map = generate_escher_map.gen_map(
      ecoli_model, rxn_with_greater_flux,  common_mets, 350, met_count
 )
 escher_json = escher_map.dump_json()
-
+# Currently Escher doesn't accept json strings, needs a file
+with open('escher.json', 'w') as f:
+    f.write(escher_json)
 # See escher documentation for more info on escher. It's possible to alter
 # line colours and thicknesses etc but i don't know how that works.
 import escher
 ecoli_metabolite_map = escher.Builder(
-    map_json=escher_json,
+    #map_json=escher_json,
+    map_json='escher.json',
     reaction_data=flux,
-    model_json=cobra.test.ecoli_json
+    model_json=os.getcwd()+'/test.json'
 )
 # Use display in browser to get an interactive version of the map.
 ecoli_metabolite_map.display_in_browser()

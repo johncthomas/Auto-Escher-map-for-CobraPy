@@ -142,7 +142,7 @@ def assign_positions(metabolites_, scale = 200):
     # Also get the deplacement xy for each vertex pair. Value used to place secondary mets
     diffs = []
     vertx_displacement = {}
-    vert_index = dict([(vert.attributes().values()[0], i)
+    vert_index = dict([(list(vert.attributes().values())[0], i)
                        for i, vert in enumerate(metgraph.vs)])
 
     # Node ids
@@ -164,7 +164,7 @@ def assign_positions(metabolites_, scale = 200):
     # Assign the vertex coords to the metabolite objects
     for i, vert in enumerate(metgraph.vs):
         #print(vert.attributes())
-        node_id = vert.attributes().values()[0]
+        node_id = list(vert.attributes().values())[0]
         met_obj = met_by_node_id[node_id]
         met_obj.grid_xy = layo.coords[i]
 
@@ -351,7 +351,7 @@ def generate_met_obj(reaction_link_map, metabolite_count):
                         p.add_connection(conn.node_id,conn.met_name,False, conn.reaction_name)
                         secondary_mets.append(p)
 
-    return primary_met_bin.values()+secondary_mets
+    return list(primary_met_bin.values())+secondary_mets
 
 def metabolite_occurence(reactions_of_interest):
     """Returns a dictionary giving the number of occurences of each metabolite
