@@ -317,14 +317,21 @@ common metabolites then no worries')
         canvas_xy = (40+hix-lowx, 40+hiy-lowy)
 
         canvas_offset = (lowx-20, lowy-20)
-        jd = {
+        jd = [
+            {
+        "map_name": "something",
+        "map_id": "oihf0qa9f0nal",
+        "map_description": "Generated with auto-Escher-map",
+        "homepage": "https://escher.github.io",
+        "schema": "https://escher.github.io/escher/jsonschema/1-0-0#"
+    },{
             "reactions":reaction_json,
             "nodes":nodes_json,
-            "membranes":[],
+            #"membranes":[],
             "text_labels":{},
             "canvas":{"x":canvas_offset[0], "y":canvas_offset[1],
                       "width":canvas_xy[0],"height":canvas_xy[1]}
-        }
+        }]
 
         js = json.dumps(jd)
         if print_json:

@@ -1,6 +1,8 @@
 from __future__ import print_function
 __author__ = 'JT'
-
+#TODO: update to newest escher ver. looks like metabolites are structured differently now
+#* have a look at iJO1366.Fatty acid beta-oxidation.json vs escher.json
+# search for "metabolites" with quotes.
 """
 Call generate_escher_map.gen_map() passing the Cobra model, a list of
 the reactions you wish to include and a list of common intermediates you do
@@ -28,8 +30,9 @@ each other and can end up with secondary metabolites further away.
 
 import cobra, cobra.test
 import generate_escher_map
+import escher.validate
 import os
-from IPython.display import HTML
+
 # Load a model.
 #ecoli_model = selected_model = cobra.io.load_json_model(cobra.test.ecoli_json)
 ecoli_model = cobra.io.read_sbml_model(cobra.test.ecoli_sbml)
@@ -106,7 +109,10 @@ ecoli_metabolite_map = escher.Builder(
     #map_json=escher_json,
     map_json='escher.json',
     reaction_data=flux,
-    model_json=os.getcwd()+'/test.json'
+    model_json='test.json'
 )
+import json
+parsed_json = json.loads(escher_json)
+escher.validate.check_map(parsed_json)
 # Use display in browser to get an interactive version of the map.
-ecoli_metabolite_map.display_in_browser()
+#ecoli_metabolite_map.display_in_browser()
