@@ -61,8 +61,8 @@ def map_links(reactions_of_interest,common_intermediates,
                 for current_m in current_r.metabolites:
                     if current_m not in common_intermediates and\
                         current_m in other_r.metabolites.keys():
-                        # We have two reactions with the same metabolite, test the direction of the reaction
-                        # Could use r1.products and r2.substrates for this
+                        # At this point we have two reactions with the same metabolite,
+                        # test the direction of the reaction.
                         if current_r.metabolites[current_m] > 0 > other_r.metabolites[current_m]:
                             lmap[current_r].append(other_r)
                         elif reverse_map and current_r.metabolites[current_m] \
@@ -142,6 +142,7 @@ def assign_positions(metabolites_, scale = 200):
     # Also get the deplacement xy for each vertex pair. Value used to place secondary mets
     diffs = []
     vertx_displacement = {}
+    # vert_index used to go from metid in metgraph to vertex in layo.coords
     vert_index = dict([(list(vert.attributes().values())[0], i)
                        for i, vert in enumerate(metgraph.vs)])
 
@@ -189,6 +190,7 @@ def assign_positions(metabolites_, scale = 200):
                         full_displacement = vertx_displacement[(target.node_id, conn.reaction_name)]
                         # get the 1 9th displacement values
                         dx, dy = [full_displacement[n]/9 for n in (0, 1)]
+                        dy *= 2
                         # The n*m potential side postions
                         side_positions = []
 
@@ -352,6 +354,7 @@ def generate_met_obj(reaction_link_map, metabolite_count):
                         secondary_mets.append(p)
 
     return list(primary_met_bin.values())+secondary_mets
+
 
 def metabolite_occurence(reactions_of_interest):
     """Returns a dictionary giving the number of occurences of each metabolite

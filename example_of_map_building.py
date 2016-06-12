@@ -1,8 +1,6 @@
 from __future__ import print_function
 __author__ = 'JT'
-#TODO: update to newest escher ver. looks like metabolites are structured differently now
-#* have a look at iJO1366.Fatty acid beta-oxidation.json vs escher.json
-# search for "metabolites" with quotes.
+
 """
 Call generate_escher_map.gen_map() passing the Cobra model, a list of
 the reactions you wish to include and a list of common intermediates you do
@@ -99,11 +97,10 @@ escher_map = generate_escher_map.gen_map(
      ecoli_model, rxn_with_greater_flux,  common_mets, 350, met_count
 )
 escher_json = escher_map.dump_json()
-# Currently Escher doesn't accept json strings, needs a file
+# Currently Escher doesn't accept json strings, needs a file, i assume that's a bug
 with open('escher.json', 'w') as f:
     f.write(escher_json)
-# See escher documentation for more info on escher. It's possible to alter
-# line colours and thicknesses etc but i don't know how that works.
+# See escher documentation for more info on escher.
 import escher
 ecoli_metabolite_map = escher.Builder(
     #map_json=escher_json,
@@ -115,4 +112,4 @@ import json
 parsed_json = json.loads(escher_json)
 escher.validate.check_map(parsed_json)
 # Use display in browser to get an interactive version of the map.
-#ecoli_metabolite_map.display_in_browser()
+ecoli_metabolite_map.display_in_browser()

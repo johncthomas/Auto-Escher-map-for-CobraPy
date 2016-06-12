@@ -55,7 +55,8 @@ class EscherMap():
         if type(cobra_reactions) is not list:
             cobra_reactions = [cobra_reactions]
         for r in cobra_reactions:
-            react_obj = EscherReaction(r.id,None,r.id)
+            #react_obj = EscherReaction(r.id,None,r.id)
+            react_obj = EscherReaction(r)
             # Add metabolites to reaction
             for metabolite in r.metabolites:
                 react_obj.add_metabolite(metabolite.id, r.metabolites[metabolite])
@@ -440,31 +441,32 @@ class EscherNode():
         return s
 
 
-class EscherReaction():
+class EscherReaction:
     """Define a reaction. ID should be unique. Name matches the
     ID in the COBRA model.
     Bigg_id gets printed on the map.
     Metabolites in form of {"cobra_met_id":int_coefficent}
     Labelxy refers to the absolute position of the label.
     """
-    def __init__(self,  name, r_id = None, bigg_id = "unnamed", metabolites = None,
+
+    def __init__(self,  cobra_r, #name = None, r_id = None, bigg_id = "unnamed", metabolites = None,
                  label_xy = (0,0), reversibility = True):
         global react_id_counter
-        self.name = name
-        if r_id is None:
-            r_id = 'r'+str(react_id_counter)
-            react_id_counter+=1
-        if metabolites is None:
-            metabolites = {}
-        self.id = r_id
-        self.bigg_id = bigg_id
+        self.name = cobra_r.name
+        #if r_id is None:
+        r_id = 'r'+str(react_id_counter)
+        react_id_counter+=1
+        #if metabolites is None:
+        metabolites = {}
+        self.id = cobra_r.id
+        self.bigg_id = cobra_r.id
         self.metabolites = metabolites
         self.segments = {}
 
         self.label_xy =  label_xy
         self.reversibility = reversibility
-        # if cobra_r  is not None:
-        #     self.cobra_r = cobra_r
+        if cobra_r  is not None:
+            self.cobra_r = cobra_r
         #react_bin[self.name] = self
 
     def add_segments_by_id(self, segment_ids, map_obj):
@@ -486,9 +488,15 @@ class EscherReaction():
         self.metabolites[name] = coefficient
 
     def get_json(self):
-        json_metabolites = {}
+
+        json_metabolites = []
         for m in self.metabolites:
-            json_metabolites[m] = {"coefficient":self.metabolites[m]}
+            json_metabolites.append({"coefficient":self.metabolites[m], 'bigg_id':m})
+
+        # get gene reaction rules
+        gene_rules = ' or '.join([g.id for g in self.cobra_r.genes])
+        # get genes list
+        genes = [{'bigg_id':g.id, "name":g.name} for g in self.cobra_r.genes]
 
         label_x, label_y = self.label_xy
         label_y = label_y
@@ -500,7 +508,9 @@ class EscherReaction():
             "reversibility":self.reversibility,
             "metabolites":json_metabolites,
             "label_x":label_x,
-            "label_y":label_y
+            "label_y":label_y,
+            "gene_reaction_rule":gene_rules,
+            "genes":genes
         }
         return jd
 
@@ -560,6 +570,7 @@ class Metabolite():
         id_s = "%s [%s]"%(self.cobra_obj.name, self.cobra_obj.id)
         x, y = self.grid_xy  if self.grid_xy else ('_', '_')
         conn = [(con.met_name, con.reaction_name) for con in self.connections]
+        #{"coefficient":-2,"bigg_id":"accoa_c"}
         return "{}: ({},{}). Cnx: {}".format(id_s, x, y, conn)
 
     def __repr__(self):
